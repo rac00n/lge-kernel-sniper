@@ -111,7 +111,9 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 	int tasksize;
 	int i;
 	int min_adj = OOM_ADJUST_MAX + 1;
+	int target_free = 0;
 	int selected_tasksize = 0;
+	int selected_target_offset;
 	int selected_oom_adj;
 	int array_size = ARRAY_SIZE(lowmem_adj);
 	int other_free = global_page_state(NR_FREE_PAGES);
@@ -197,6 +199,7 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		struct mm_struct *mm;
 		struct signal_struct *sig;
 		int oom_adj;
+		int target_offset;
 
 		task_lock(p);
 		mm = p->mm;
@@ -214,15 +217,17 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		task_unlock(p);
 		if (tasksize <= 0)
 			continue;
+		target_offset = abs(target_free - tasksize);
 		if (selected) {
 			if (oom_adj < selected_oom_adj)
 				continue;
 			if (oom_adj == selected_oom_adj &&
-			    tasksize <= selected_tasksize)
+			    target_offset >= selected_target_offset)
 				continue;
 		}
 		selected = p;
 		selected_tasksize = tasksize;
+		selected_target_offset = target_offset;
 		selected_oom_adj = oom_adj;
 	//kiyong.choi@lge.com (+)
 		if(lowmem_deathpending && selected != lowmem_deathpending)
