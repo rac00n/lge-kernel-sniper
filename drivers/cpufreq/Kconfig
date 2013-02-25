@@ -149,6 +149,14 @@ config CPU_FREQ_DEFAULT_GOV_LIONHEART
 	  is very aggressive. When it comes to smoothness (not considering
 	  battery drain), a tuned conservative delivers more as compared to
 	  a tuned ondemand.
+
+config CPU_FREQ_DEFAULT_GOV_SAVAGEDZEN
+  	bool "savagedzen"
+  	select CPU_FREQ_GOV_SAVAGEDZEN
+	select CPU_FREQ_GOV_PERFORMANCE
+  	help
+    	  Use the CPUFreq governor 'savaged-zen' as default.
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -301,6 +309,14 @@ config CPU_FREQ_GOV_LIONHEART
 	depends on CPU_FREQ
 	help
 	  'LionHeart' - a more aggressive conservative governor approach.
+
+	  If in doubt, say N.
+
+config CPU_FREQ_GOV_SAVAGEDZEN
+	tristate "'savagedzen' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  'SavagedZen' - a "smartass" based governor
 
 	  If in doubt, say N.
 
