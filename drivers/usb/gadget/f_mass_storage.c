@@ -2231,7 +2231,7 @@ unknown_cmnd:
 #if defined(CONFIG_LGE_ANDROID_USB)
 					  DATA_DIR_UNKNOWN, ~0, 0, unknown);
 #else
-				      DATA_DIR_UNKNOWN, 0xff, 0, unknown);
+				      DATA_DIR_UNKNOWN, ~0, 0, unknown);
 #endif
 		if (reply == 0) {
 			common->curlun->sense_data = SS_INVALID_COMMAND;
