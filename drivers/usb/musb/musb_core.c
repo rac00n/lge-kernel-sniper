@@ -2049,7 +2049,7 @@ musb_init_controller(struct device *dev, int nIrq, void __iomem *ctrl)
 	/* be sure interrupts are disabled before connecting ISR */
 	musb_platform_disable(musb);
 	musb_generic_disable(musb);
-
+	
 	musb_core_reset(musb);  
 
 	/* setup musb parts of the core (especially endpoints) */

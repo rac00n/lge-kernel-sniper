@@ -749,14 +749,12 @@ static struct synaptics_i2c_rmi_platform_data hub_ts_synaptics_platform_data[] =
 // 20100619 jh.koo@lge.com Hub touchscreen [END_LGE]
 #endif
 
-#if defined(CONFIG_MUIC)
 /* LGE_SJIT 2012-01-27 [dojip.kim@lge.com] add muic platform data */
 static struct muic_platform_data muic_pdata = {
 	.gpio_int = MUIC_INT_GPIO,
 	.gpio_ifx_vbus = GPIO_IFX_USB_VBUS_EN,
 	//.gpio_mhl = NULL,	
 };
-#endif
 
 static struct i2c_board_info __initdata hub_i2c_bus2_info[] = {
 // 20100629 jh.koo@lge.com Hub Backlight [START_LGE]
@@ -900,14 +898,21 @@ static struct i2c_board_info __initdata hub_i2c_bus3_info[] = {
 
 /* Proximity Sensor */
 #if defined(CONFIG_BJ_PROXI_SENSOR)
-	{	 
-		I2C_BOARD_INFO("black_proxi", 0x44),
-	},
-#elif defined(CONFIG_GP2AP_PROXIMITY)
-	{	 I2C_BOARD_INFO("hub_proxi", 0x44),
-	},
+#	{	 
+#		I2C_BOARD_INFO("black_proxi", 0x44),
+#	},
 #endif
 
+
+
+/* LGE_CHANGE_S, hyun.seungjin@lge.com, 2011-02-23, Move directory from driver/hub to misc */
+#if defined(CONFIG_GP2AP_PROXIMITY)
+// 20100717 jh.koo@lge.com Hub Proximity Sensor [START_LGE]
+	{	 I2C_BOARD_INFO("hub_proxi", 0x44),	 
+//		.irq = OMAP_GPIO_IRQ(14),	 
+	},
+// 20100717 jh.koo@lge.com Hub Proximity Sensor [END_LGE]
+#endif
 
 #if 0
 /* Accelerometer Sensor */

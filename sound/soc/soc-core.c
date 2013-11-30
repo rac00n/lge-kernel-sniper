@@ -1209,7 +1209,7 @@ int snd_soc_suspend(struct device *dev)
 	struct snd_soc_card *card = dev_get_drvdata(dev);
 	struct snd_soc_codec *codec;
 	int i;
-
+  
   int phone_suspended =  fmradio_get_curmode();//~DEJA /* B Project GB FM Radio sleep issue */ //aravind.srinivas@lge.com//FM sleep
 
    //printk("====== choi snd_soc_suspend : %d=====\n",phone_suspended);
@@ -1303,8 +1303,8 @@ int snd_soc_suspend(struct device *dev)
                         }
                      #endif   
                         else
-		snd_pcm_suspend_all(card->rtd[i].pcm);
-	}
+                            snd_pcm_suspend_all(card->rtd[i].pcm);
+                    }
                     else
                     snd_pcm_suspend_all(card->rtd[i].pcm);
                     //LGE_D1_BSP_ICS_E  seungdae.goh@lge.com 2012-04-17    [END_LGE]               

@@ -1427,12 +1427,12 @@ wl_iw_control_wl_on(
 
 #if defined(CONFIG_LGE_BCM432X_PATCH) && defined(SOFTAP)
 int
-wl_control_wl_start_real(struct net_device *dev, int restart)
+wl_control_wl_start(struct net_device *dev)
 {
 	int ret = 0;
 	wl_iw_t *iw;
 
-	WL_ERROR(("Enter %s (restarting: %d) \n", __FUNCTION__, restart));
+	WL_ERROR(("Enter %s \n", __FUNCTION__));
 
 	if (!dev) {
 		WL_ERROR(("%s: dev is null\n", __FUNCTION__));
@@ -1443,7 +1443,8 @@ wl_control_wl_start_real(struct net_device *dev, int restart)
 //	MUTEX_LOCK(iw->pub);
 
 	if (g_onoff == G_WLAN_SET_OFF) {
-		if (restart) {
+//bill.jung@lge.com - Don't restart. 
+#if 0
 		dhd_customer_gpio_wlan_ctrl(WLAN_RESET_ON);
 #if defined(BCMLXSDMMC)
 		sdioh_start(NULL, 0);
@@ -1456,41 +1457,14 @@ wl_control_wl_start_real(struct net_device *dev, int restart)
 #endif
 
 		dhd_dev_init_ioctl(dev);
-		}
+#endif
 		g_onoff = G_WLAN_SET_ON;
-	}
-	else if (restart) {
-		dhd_dev_reset(dev, 1);
-#if defined(BCMLXSDMMC)
-		sdioh_stop(NULL);
-#endif
-		dhd_customer_gpio_wlan_ctrl(WLAN_RESET_OFF);
-
-		bcm_mdelay(200); 
-
-		dhd_customer_gpio_wlan_ctrl(WLAN_RESET_ON);
-#if defined(BCMLXSDMMC)
-		sdioh_start(NULL, 0);
-#endif
-
-		dhd_dev_reset(dev, 0);
-
-#if defined(BCMLXSDMMC)
-		sdioh_start(NULL, 1);
-#endif
-
 	}
 	WL_ERROR(("Exited %s \n", __FUNCTION__));
 
 //	MUTEX_UNLOCK(iw->pub);
 	return ret;
 }
-
-int
-wl_control_wl_start(struct net_device *dev) {
-       wl_control_wl_start_real(dev, false);
-}
-
 static int
 wl_iw_control_wl_off_softap(
 	struct net_device *dev,
@@ -1559,7 +1533,7 @@ wl_iw_control_wl_on_softap(
 
 	WL_TRACE(("Enter %s \n", __FUNCTION__));
 
-	ret = wl_control_wl_start_real(dev, 1);
+	ret = wl_control_wl_start(dev);
 
 	wl_iw_send_priv_event(dev, "START");
 

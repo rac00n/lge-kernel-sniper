@@ -153,7 +153,6 @@ struct bd2802_led {
 #ifdef CONFIG_HAS_EARLYSUSPEND
 	struct early_suspend early_suspend; 
 #endif
-	int     led_resumed;//2011205 kyungyoon.kim@lge.com lcd resume speed
 };
 
 static struct i2c_client *bd2802_i2c_client;
@@ -406,6 +405,15 @@ void touchkey_pressed(enum key_leds id)
 		bd2802_on(led);
 		led->led_state = BD2802_ON;
 	}
+	/* LGE_UPDATE_S 2011-10-26 [daewung.kim@lge.com] : Turn off LED backlight for power consumption */
+	else if (led->led_state == BD2802_OFF) {
+		led->white_current = BD2802_CURRENT_WHITE_MAX;
+		led->blue_current = BD2802_CURRENT_000;	
+		led->led_state = BD2802_ON;
+		bd2802_on(led);
+		bd2802_enable(led);
+	}
+	/* LGE_UPDATE_E 2011-10-26 [daewung.kim@lge.com] : Turn off LED backlight for power consumption */
 
 	if (led->key_led != id)
 		bd2802_turn_white(led,led->key_led);
@@ -524,7 +532,7 @@ static void bd2802_touchkey_work_func(struct work_struct *work)
 	bd2802_turn_white(led,led->key_led);
 	bd2802_turn_blue(led,HIDDEN1);
 	bd2802_turn_blue(led,HIDDEN2);
-	//hrtimer_start(&led->ledmin_timer, ktime_set(5, 0), HRTIMER_MODE_REL);
+	hrtimer_start(&led->ledmin_timer, ktime_set(5, 0), HRTIMER_MODE_REL);
 }
 
 static enum hrtimer_restart bd2802_touchkey_timer_func(struct hrtimer *timer)
@@ -544,20 +552,15 @@ static void bd2802_ledmin_work_func(struct work_struct *work)
 	struct bd2802_led *led = container_of(work, struct bd2802_led, ledmin_work);
 	led->white_current = BD2802_CURRENT_WHITE_MIN;
 	led->blue_current = BD2802_CURRENT_000;
-#if 1  
-    led->led_state=BD2802_ON;
-//--[[ LGE_UBIQUIX_MODIFIED_START : shyun@ubiquix.com [2011.09.09] - Merge from Black_Froyo MR Ver.
-    //bd2802_off(led);
-    bd2802_turn_white(led, MENU);
-       bd2802_turn_white(led, HOME);
-       bd2802_turn_white(led, BACK);
-       bd2802_turn_white(led, SEARCH);
-       
-//--]] LGE_UBIQUIX_MODIFIED_END : shyun@ubiquix.com [2011.09.09]- Merge from Black_Froyo MR Ver.
-#else  
+/* LGE_UPDATE_S 2011-10-26 [daewung.kim@lge.com] : Turn off LED backlight for power consumption */
+#if 0
 	bd2802_on(led);
-#endif
 	led->led_state = BD2802_DIMMING;
+#else
+	bd2802_off(led);
+	led->led_state = BD2802_OFF;
+#endif
+/* LGE_UPDATE_E 2011-10-26 [daewung.kim@lge.com] : Turn off LED backlight for power consumption */
 }
 
 static enum hrtimer_restart bd2802_ledmin_timer_func(struct hrtimer *timer)
@@ -721,7 +724,7 @@ static ssize_t bd2802_store_led_onoff(struct device *dev,
 
 	DBG("value=%d\n",value);
 
-	if ((value==1 || value == 255)/*&&(led->led_state!=BD2802_ON)*/)
+	if ((value==1)&&(led->led_state!=BD2802_ON))
 	{
 		led->led_state = BD2802_ON;
 		led->white_current = BD2802_CURRENT_WHITE_MAX;
@@ -731,7 +734,7 @@ static ssize_t bd2802_store_led_onoff(struct device *dev,
 		bd2802_on(led);
 		bd2802_enable(led);
 	}
-	else if ((value==0)/*&&(led->led_state!=BD2802_OFF)*/)
+	else if ((value==0)&&(led->led_state!=BD2802_OFF))
 	{
 		bd2802_off(led);
 		gpio_set_value(RGB_LED_CNTL, 0);
@@ -1025,9 +1028,6 @@ static int bd2802_bl_resume(struct i2c_client *client)
 {
 	struct bd2802_led *led = i2c_get_clientdata(client);
 	DBG("\n");
-
-	if (led->led_resumed==1)
-		return 0;
 	
 	led->led_state = BD2802_ON;
 	led->white_current = BD2802_CURRENT_WHITE_MAX;
@@ -1041,15 +1041,10 @@ static int bd2802_bl_resume(struct i2c_client *client)
 	bd2802_enable(led);
 
 	//hrtimer_start(&led->touchkey_timer, ktime_set(0, 500000000), HRTIMER_MODE_REL); /*5 sec */
-	//hrtimer_start(&led->ledmin_timer, ktime_set(5, 0), HRTIMER_MODE_REL);
-	led->led_resumed=1;
+	hrtimer_start(&led->ledmin_timer, ktime_set(5, 0), HRTIMER_MODE_REL);
 	return 0;
 }
 
-/* 20110304 seven.kim@lge.com late_resume_lcd [START] */
-static int bd2802_suspend(struct i2c_client *client, pm_message_t mesg);
-static int bd2802_resume(struct i2c_client *client);
-/* 20110304 seven.kim@lge.com late_resume_lcd [END] */
 
 static void bd2802_early_suspend(struct early_suspend *h)
 {
@@ -1064,20 +1059,7 @@ static void bd2802_early_suspend(struct early_suspend *h)
 	hrtimer_cancel(&led->timer);
 	hrtimer_cancel(&led->touchkey_timer);
 	hrtimer_cancel(&led->ledmin_timer);
-
-	// dajin.kim@lge.com - add cancel_work_sync [Start]
-	cancel_work_sync(&led->work);
-	cancel_work_sync(&led->touchkey_work);
-	cancel_work_sync(&led->ledmin_work);
-	// dajin.kim@lge.com - add cancel_work_sync [End]
-
 	bd2802_bl_suspend(led->client, PMSG_SUSPEND);
-	led->led_resumed=0;
-
-	/* 20110304 seven.kim@lge.com late_resume_lcd [START] */
-	bd2802_suspend(led->client, PMSG_SUSPEND);
-	/* 20110304 seven.kim@lge.com late_resume_lcd [END] */  
-
 }
 
 
@@ -1087,10 +1069,6 @@ static void bd2802_late_resume(struct early_suspend *h)
 	DBG("\n");
 
 	led = container_of(h, struct bd2802_led, early_suspend);
-
-	/* 20110304 seven.kim@lge.com late_resume_lcd [START] */
-	bd2802_resume(led->client);
-	/* 20110304 seven.kim@lge.com late_resume_lcd [END] */
 
 	if (led->led_state==BD2802_SEQ)
 		return;
@@ -1240,7 +1218,6 @@ static int bd2802_suspend(struct i2c_client *client, pm_message_t mesg)
 
 	gpio_set_value(RGB_LED_CNTL, 0);
 	led->led_state = BD2802_OFF;
-	led->led_resumed=0;
 
 	return 0;
 }
@@ -1272,10 +1249,8 @@ static struct i2c_driver bd2802_i2c_driver = {
 	},
 	.probe		= bd2802_probe,
 	.remove		= __exit_p(bd2802_remove),
-#ifndef CONFIG_HAS_EARLYSUSPEND /* 20110304 seven.kim@lge.com late_resume_lcd */
 	.suspend	= bd2802_suspend,
 	.resume		= bd2802_resume,
-#endif
 	.id_table	= bd2802_id,
 };
 

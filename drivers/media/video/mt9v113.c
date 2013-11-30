@@ -584,18 +584,18 @@ int mt9v113sensor_set_brightness(u16 value, struct v4l2_int_device *s,
 
   // 20120823 jungyeal@lge.com check mode code moved this code here
   mt9v113_write_reg(client, 0x098C, 0xA103, REG_VAL_DATA_LEN);
-  mt9v113_write_reg(client, 0x0990, 0x0005, REG_VAL_DATA_LEN);
+  mt9v113_write_reg(client, 0x0990, 0x0005, REG_VAL_DATA_LEN); 
   mt9v113_chk_modeChange(client, 0xA103);
-  
+	
   msleep(10);
-
-  mt9v113_write_reg(client, 0x098C, 0xA103, REG_VAL_DATA_LEN);  
+  
+  mt9v113_write_reg(client, 0x098C, 0xA103, REG_VAL_DATA_LEN);   
   mt9v113_write_reg(client, 0x0990, 0x0006, REG_VAL_DATA_LEN);  
   mt9v113_chk_modeChange(client, 0xA103);
 
   msleep(10);
 
-
+  
   switch (value) {
   case  0:
     mt9v113_write_regs(client, Brightness1);

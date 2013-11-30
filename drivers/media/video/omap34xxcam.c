@@ -600,18 +600,18 @@ static int try_pix_parm(struct omap34xxcam_videodev *vdev,
 				 */
 #ifdef CONFIG_VIDEO_OMAP3_SIZENEG_TRYBIGGER
 				if (!(vdev->vdev_sensor_config.sensor_isp)) {
-				if (frmi.width + frmi.height
-				    > best_pix_in->width + best_pix_in->height
-				    && FPS_ABS_DIFF(fps, frmi.discrete)
-				    <= FPS_ABS_DIFF(fps, *best_ival)) {
-					dev_dbg(&vdev->vfd->dev, "bigger res, "
-						"same fps: "
-						"w %d\th %d\tw %d\th %d\n",
-						frmi.width, frmi.height,
-						best_pix_in->width,
-						best_pix_in->height);
-					goto do_it_now;
-				}
+					if (frmi.width + frmi.height
+					    > best_pix_in->width + best_pix_in->height
+					    && FPS_ABS_DIFF(fps, frmi.discrete)
+					    <= FPS_ABS_DIFF(fps, *best_ival)) {
+						dev_dbg(&vdev->vfd->dev, "bigger res, "
+							"same fps: "
+							"w %d\th %d\tw %d\th %d\n",
+							frmi.width, frmi.height,
+							best_pix_in->width,
+							best_pix_in->height);
+						goto do_it_now;
+					}
 				}
 #endif
 				dev_dbg(&vdev->vfd->dev, "falling through\n");

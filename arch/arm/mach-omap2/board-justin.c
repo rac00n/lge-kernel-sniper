@@ -58,6 +58,24 @@ static struct omap_board_mux board_mux[] __initdata = {
  * The 'exit_latency' field is the sum of sleep and wake-up latencies.
  */
 static struct cpuidle_params hub_cpuidle_params[] = {
+
+/* S[, 20120922, mannsik.chung@lge.com, PM from froyo. */
+#if defined(CONFIG_PRODUCT_LGE_LU6800)
+	/* C1 */
+	{110 + 162, 5 , 1},
+	/* C2 */
+	{106 + 180, 309, 1},
+	/* C3 */
+	{107 + 203, 46057, 1}, // <- Only this is diff.
+	/* C4 */
+	{121 + 3374, 46057, 0},
+	/* C5 */
+	{855 + 1146, 46057, 1},
+	/* C6 */
+	{7580 + 4134, 484329, 0},
+	/* C7 */
+	{7505 + 15274, 484329, 1},
+#else
 	/* C1 */
 	{110 + 162, 5 , 1},
 	/* C2 */
@@ -72,6 +90,8 @@ static struct cpuidle_params hub_cpuidle_params[] = {
 	{7580 + 4134, 484329, 0},
 	/* C7 */
 	{7505 + 15274, 484329, 1},
+#endif
+/* E], 20120922, mannsik.chung@lge.com, PM from froyo. */
 };
 
 static void __init omap_hub_init(void)

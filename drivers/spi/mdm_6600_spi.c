@@ -1049,9 +1049,9 @@ static int spi2spi_start_test(struct ifx_spi_data *spi_data)
     }
     else
     {
-    MSPI_DBG(9,"spi2spi_start_test start work \n");
-    queue_work(spi_data->ifx_wq, &spi_data->ifx_work);
-    return 0;
+        MSPI_DBG(9,"spi2spi_start_test start work \n");
+        queue_work(spi_data->ifx_wq, &spi_data->ifx_work);
+        return 0;
     }
 
 out:

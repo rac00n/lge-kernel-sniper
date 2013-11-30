@@ -169,12 +169,12 @@ static ssize_t modem_reset_ctrl_store(struct device *dev,
         new_reset_ctrl = simple_strtol(buf, NULL, 10);
 
 	if (modem_ctrl.reset_ctrl != new_reset_ctrl) {
-		modem_ctrl.reset_ctrl = new_reset_ctrl;
+                modem_ctrl.reset_ctrl = new_reset_ctrl;
 
                 dump_gpio_status(__FUNCTION__, 1);
                 //omap_mux_config("GPIO26_MODEM_RESET_CTRL_GPIO"); // XXX: 20060617 temporarily disabled
 		gpio_set_value(MODEM_RESET_CTRL_GPIO, modem_ctrl.reset_ctrl);
-		gpio_direction_output(MODEM_RESET_CTRL_GPIO, modem_ctrl.reset_ctrl);
+                gpio_direction_output(MODEM_RESET_CTRL_GPIO, modem_ctrl.reset_ctrl);
                 dump_gpio_status(__FUNCTION__, 2);
 	}
 
@@ -229,7 +229,7 @@ static int modem_ctrl_probe(struct platform_device *pdev)
 	int ret = 0;
 
 #if DEBUG
-	dump_gpio_status(__FUNCTION__, 1);
+        dump_gpio_status(__FUNCTION__, 1);
 #endif /* DEBUG */
 	/* request gpio */
 #if FEATURE_MODEM_POWER_CTRL
@@ -245,17 +245,17 @@ static int modem_ctrl_probe(struct platform_device *pdev)
 /* sudhir Start */
 #if 0//DEBUG  //FOTA CP Reset for Retry by seunghyun.yi@lge.com 2011_02_09
 	printk("###** MODEM_POWER_CTRL_GPIO: Initial Current, %d\n", gpio_get_value(MODEM_POWER_CTRL_GPIO));
-        mdelay(1000);
+	mdelay(1000);
 
 	gpio_direction_output(MODEM_POWER_CTRL_GPIO, 0);
-        gpio_set_value(MODEM_POWER_CTRL_GPIO, 0);
+	gpio_set_value(MODEM_POWER_CTRL_GPIO, 0);
 	printk("###** MODEM_POWER_CTRL_GPIO: After Set Low, %d\n", gpio_get_value(MODEM_POWER_CTRL_GPIO));
-        mdelay(1000);
+	mdelay(1000);
 
 	gpio_direction_output(MODEM_POWER_CTRL_GPIO, 1);
-        gpio_set_value(MODEM_POWER_CTRL_GPIO, 1);
+	gpio_set_value(MODEM_POWER_CTRL_GPIO, 1);
 	printk("###** MODEM_POWER_CTRL_GPIO: After Set High, %d\n", gpio_get_value(MODEM_POWER_CTRL_GPIO));
-        mdelay(1000);
+	mdelay(1000);
 #endif /* DEBUG */
 #endif // FEATURE_MODEM_POWER_CTRL
 
@@ -276,32 +276,32 @@ static int modem_ctrl_probe(struct platform_device *pdev)
 
 #if 0//DEBUG  //FOTA CP Reset for Retry by seunghyun.yi@lge.com 2011_02_09
 /* sudhir end */
-        dump_gpio_status(__FUNCTION__, 3);
+	dump_gpio_status(__FUNCTION__, 3);
 
 	printk("###** MODEM_RESET_CTRL_GPIO: Initial Current, %d\n", gpio_get_value(MODEM_RESET_CTRL_GPIO));
 
-        mdelay(1000);
+	mdelay(1000);
 	gpio_direction_output(MODEM_RESET_CTRL_GPIO, 0);
-        gpio_set_value(MODEM_RESET_CTRL_GPIO, 0);
-        dump_gpio_status(__FUNCTION__, 4);
+	gpio_set_value(MODEM_RESET_CTRL_GPIO, 0);
+	dump_gpio_status(__FUNCTION__, 4);
 	printk("###** MODEM_RESET_CTRL_GPIO: After Set Low, %d\n", gpio_get_value(MODEM_RESET_CTRL_GPIO));
 
-        mdelay(1000);
+	mdelay(1000);
 	gpio_direction_output(MODEM_RESET_CTRL_GPIO, 1);
-        gpio_set_value(MODEM_RESET_CTRL_GPIO, 1);
-        dump_gpio_status(__FUNCTION__, 5);
+	gpio_set_value(MODEM_RESET_CTRL_GPIO, 1);
+	dump_gpio_status(__FUNCTION__, 5);
 	printk("###** MODEM_RESET_CTRL_GPIO: After Set High, %d\n", gpio_get_value(MODEM_RESET_CTRL_GPIO));
 
-        mdelay(1000);
-        gpio_direction_output(MODEM_RESET_CTRL_GPIO, 0);
-        gpio_set_value(MODEM_RESET_CTRL_GPIO, 0);
-        dump_gpio_status(__FUNCTION__, 6);
+	mdelay(1000);
+	gpio_direction_output(MODEM_RESET_CTRL_GPIO, 0);
+	gpio_set_value(MODEM_RESET_CTRL_GPIO, 0);
+	dump_gpio_status(__FUNCTION__, 6);
 	printk("###** MODEM_RESET_CTRL_GPIO: After Set Low, %d\n", gpio_get_value(MODEM_RESET_CTRL_GPIO));
 
-        mdelay(1000);
-        gpio_direction_output(MODEM_RESET_CTRL_GPIO, 1);
-        gpio_set_value(MODEM_RESET_CTRL_GPIO, 1);
-        dump_gpio_status(__FUNCTION__, 7);
+	mdelay(1000);
+	gpio_direction_output(MODEM_RESET_CTRL_GPIO, 1);
+	gpio_set_value(MODEM_RESET_CTRL_GPIO, 1);
+	dump_gpio_status(__FUNCTION__, 7);
 	printk("###** MODEM_RESET_CTRL_GPIO: After Set High, %d\n", gpio_get_value(MODEM_RESET_CTRL_GPIO));
 #endif /* DEBUG */
 #endif // FEATURE_MODEM_RESET_CTRL

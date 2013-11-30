@@ -186,7 +186,7 @@ void usif_switch_ctrl(TYPE_USIF_MODE mode)
 {
 	pr_info("usif: %s()\n", __func__);
 //USIF can't switch
-	
+
 	gpio_direction_output(GPIO_USIF_IN_1, 0);		// LGE_MOD 20121106 subum.choi@lge.com [FOTA] UART4 Path
 
 	if(!usif_ctrl){
@@ -194,10 +194,10 @@ void usif_switch_ctrl(TYPE_USIF_MODE mode)
 		return;
 	}
 	if (mode == USIF_AP) {
-		gpio_set_value(GPIO_USIF_IN_1, 0);
+		gpio_set_value(GPIO_USIF_IN_1, 0);	
 		pr_info("usif: usif_switch_ctrl, CP UART is connected to AP\n");
 	} else if (mode == USIF_DP3T) {
-		gpio_set_value(GPIO_USIF_IN_1, 1);
+		gpio_set_value(GPIO_USIF_IN_1, 1);		
 		pr_info("usif: usif_switch_ctrl, CP UART is connected to DP3T (then, MUIC)\n");
 	} else {
 		/* Just keep the current path */

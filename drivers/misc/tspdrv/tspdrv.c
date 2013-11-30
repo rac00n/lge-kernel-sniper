@@ -431,7 +431,6 @@ static int ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsig
 #ifdef QA_TEST
     	int i;
 #endif
-	VibeInt8 nForce[1] = {128};
 
 	DbgOut(( "[tspdrv] : ioctl cmd = %d   %x\n", cmd, cmd ));
 
@@ -462,20 +461,14 @@ static int ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsig
 #endif
             		break;
 
-		case TSPDRV_MAGIC_NUMBER:
-			file->private_data = (void*)TSPDRV_MAGIC_NUMBER;
-			break;
-
-		case TSPDRV_ENABLE_TIMED_AMP:
-			ImmVibeSPI_ForceOut_AmpEnable(0);
-			ImmVibeSPI_ForceOut_SetSamples(0, 8, 1, nForce);
-			VibeOSKernelLinuxAutoTimer(*((int*)arg));
-			break;
+        	case TSPDRV_MAGIC_NUMBER:
+            		file->private_data = (void*)TSPDRV_MAGIC_NUMBER;
+            		break;
 
         	case TSPDRV_ENABLE_AMP:
 					ImmVibeSPI_ForceOut_AmpEnable( arg );
 					enable_time = time_ms();
-					//printk("VIB Enable\n");
+					printk("VIB Enable\n");
             		DbgRecorderReset( ( arg ) );
             		DbgRecord( ( arg,";------- TSPDRV_ENABLE_AMP ---------\n" ) );
 					enabled = 1;
@@ -488,7 +481,7 @@ static int ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsig
                 		ImmVibeSPI_ForceOut_AmpDisable( arg );
 						enabled = 0;
 						disable_time = time_ms();	
-						//printk("VIB Disable [%lu][!req=%d]\n", (disable_time - enable_time), !g_bStopRequested);
+						printk("VIB Disable [%lu][!req=%d]\n", (disable_time - enable_time), !g_bStopRequested);
             		}
             		break;
 

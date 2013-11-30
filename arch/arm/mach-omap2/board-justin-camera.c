@@ -127,6 +127,10 @@ static struct pm_qos_request_list pm_qos_handler;
 #define CLEAR_MPU_CONSTRAINT       -1
 //--]] LGE_UBIQUIX_MODIFIED_END : ymjun@mnbt.co.kr [2012.05.22] - CAM
 
+/* S[, 20120922, mannsik.chung@lge.com, PM from froyo. */
+extern u32 doing_wakeup;
+/* E], 20120922, mannsik.chung@lge.com, PM from froyo. */
+
 #if defined(CONFIG_VIDEO_IMX072) || defined(CONFIG_VIDEO_IMX072_MODULE)
 
 static struct omap34xxcam_sensor_config imx072_hwc = {
@@ -194,6 +198,10 @@ static int imx072_sensor_power_set(struct v4l2_int_device *s, enum v4l2_power po
 		 */
 		omap_pm_set_min_bus_tput(vdev->cam->isp,
 					 OCP_INITIATOR_AGENT, 800000);
+
+/* S[, 20120922, mannsik.chung@lge.com, PM from froyo. */
+		doing_wakeup = 1;
+/* E], 20120922, mannsik.chung@lge.com, PM from froyo. */
 
 		/* Hold a constraint to keep MPU in C1 */
 		//--[[ LGE_UBIQUIX_MODIFIED_START : ymjun@mnbt.co.kr [2012.05.22] - CAM
@@ -337,6 +345,10 @@ static int imx072_sensor_power_set(struct v4l2_int_device *s, enum v4l2_power po
 		subpm_set_output(SWREG,0);
 		subpm_output_enable();
 		gpio_free(IMX072_RESET_GPIO);
+
+/* S[, 20120922, mannsik.chung@lge.com, PM from froyo. */
+		doing_wakeup = 0;
+/* E], 20120922, mannsik.chung@lge.com, PM from froyo. */
 
 		/* Remove pm constraints */
 		//--[[ LGE_UBIQUIX_MODIFIED_START : ymjun@mnbt.co.kr [2012.05.22] - CAM		
@@ -672,6 +684,9 @@ static int mt9v113_sensor_power_set(struct v4l2_int_device *dev, enum v4l2_power
 	 * is in KByte/s so 200000 KHz * 4 = 800000 KByte/s
 	 */
     omap_pm_set_min_bus_tput(vdev->cam->isp, OCP_INITIATOR_AGENT, 800000);
+/* S[, 20120922, mannsik.chung@lge.com, PM from froyo. */
+	doing_wakeup = 1;
+/* E], 20120922, mannsik.chung@lge.com, PM from froyo. */
 
     /* Hold a constraint to keep MPU in C1 */
     //--[[ LGE_UBIQUIX_MODIFIED_START : ymjun@mnbt.co.kr [2012.05.22] - CAM
@@ -780,7 +795,10 @@ static int mt9v113_sensor_power_set(struct v4l2_int_device *dev, enum v4l2_power
     
     gpio_free(MT9V113_STANDBY_GPIO);
     gpio_free(MT9V113_RESET_GPIO);
-    
+   
+/* S[, 20120922, mannsik.chung@lge.com, PM from froyo. */
+	doing_wakeup = 0; 
+/* E], 20120922, mannsik.chung@lge.com, PM from froyo. */
     
 	/* Remove pm constraints */
 	//--[[ LGE_UBIQUIX_MODIFIED_START : ymjun@mnbt.co.kr [2012.05.22] - CAM		
